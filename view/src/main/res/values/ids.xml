@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="flexboxCutline" type="id" />
+    <item name="handleId" type="id"/>
+    <item name="leftParrent" type="id"/>
+    <item name="panelId" type="id"/>
+    <item name="rightParrent" type="id"/>
+    <item name="statusBarId" type="id"/>
+    <item name="titleParrent" type="id"/>
+</resources>

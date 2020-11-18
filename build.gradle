@@ -4,7 +4,7 @@ buildscript {
     ext.minVersion = 21
     ext.compileVersion = 28
     ext.targetVersion = 28
-    ext.groupName = "com.mangotea."
+    ext.groupName = "mangotea."
     repositories {
         google()
         jcenter()

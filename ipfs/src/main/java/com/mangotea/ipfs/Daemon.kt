@@ -184,11 +184,11 @@ class Daemon(_context: Context) {
 
         private val exMsgs by lazy {
             arrayListOf("cannot connect to the api. Is the deamon running?",
-                    "try running 'ipfs daemon' first",
-                    "cannot acquire lock: Lock FcntlFlock of",
+                "try running 'ipfs daemon' first",
+                "cannot acquire lock: Lock FcntlFlock of",
 //                "this action must be run in online mode",
-                    "no IPFS repo found in",
-                    "please run: 'ipfs init'")
+                "no IPFS repo found in",
+                "please run: 'ipfs init'")
         }
         val working: Boolean
             get() {
@@ -261,35 +261,35 @@ class Daemon(_context: Context) {
                 }
             }
             bootstraps?.takeIf { it.isNotEmpty() }
-                    ?.let { newBootstraps ->//如果配置了bootstrap，
-                        try {
-                            val cmd = "bootstrap list"
-                            val oldBootstraps = logStream(
-                                    run(cmd, false).inputStream,
-                                    cmd,
-                                    "input",
-                                    false
-                            ).split("\n")
-                            //则判断是否已经添加了所有新节点，如果没有，则添加。此处的逻辑主要用于防止安装或更新时，已经配置过bootstrap而进行二次调用
-                            if (!oldBootstraps.containsAll(newBootstraps)) {
-                                "重新配置bootstrap".d(TAG)
-                                run("bootstrap rm all", false)
-                                for (bootstrap in newBootstraps) {
-                                    run("bootstrap add $bootstrap", false)
-                                }
+                ?.let { newBootstraps ->//如果配置了bootstrap，
+                    try {
+                        val cmd = "bootstrap list"
+                        val oldBootstraps = logStream(
+                            run(cmd, false).inputStream,
+                            cmd,
+                            "input",
+                            false
+                        ).split("\n")
+                        //则判断是否已经添加了所有新节点，如果没有，则添加。此处的逻辑主要用于防止安装或更新时，已经配置过bootstrap而进行二次调用
+                        if (!oldBootstraps.containsAll(newBootstraps)) {
+                            "重新配置bootstrap".d(TAG)
+                            run("bootstrap rm all", false)
+                            for (bootstrap in newBootstraps) {
+                                run("bootstrap add $bootstrap", false)
                             }
-                        } catch (e: ConnectionResetException) {
-                            //网络连接断开等某些原因导致socket断开而无法继续读流等异常，该异常不应当影响初始化
                         }
+                    } catch (e: ConnectionResetException) {
+                        //网络连接断开等某些原因导致socket断开而无法继续读流等异常，该异常不应当影响初始化
                     }
+                }
 
             kotlin.runCatching {
                 val newestVersion =
-                        logStream(
-                                run("version --enc json", false).inputStream,
-                                "version --enc json",
-                                "input"
-                        )
+                    logStream(
+                        run("version --enc json", false).inputStream,
+                        "version --enc json",
+                        "input"
+                    )
                 d("NEWEST IPFS VERSION:$newestVersion", TAG)
             }
             initializing = false
@@ -362,16 +362,16 @@ class Daemon(_context: Context) {
             if (newstVersion.isNullOrEmpty())
                 return true
             val installedVersion =
-                    logStream(
-                            run("version --enc json", false).inputStream,
-                            "version --enc json",
-                            "input"
-                    ).takeIf { !it.isNullOrEmpty() }?.let {
-                        runCatching {
-                            d("IPFS INSTALLED VERSION:$it", TAG)
-                            gson.fromJson(it, Version::class.java)
-                        }.getOrNull()
-                    }?.Sn ?: return true
+                logStream(
+                    run("version --enc json", false).inputStream,
+                    "version --enc json",
+                    "input"
+                ).takeIf { !it.isNullOrEmpty() }?.let {
+                    runCatching {
+                        d("IPFS INSTALLED VERSION:$it", TAG)
+                        gson.fromJson(it, Version::class.java)
+                    }.getOrNull()
+                }?.Sn ?: return true
             return SinoVersion.of(newstVersion) > installedVersion
         }
 
@@ -414,7 +414,7 @@ class Daemon(_context: Context) {
             if (!binaryFile.exists())
                 throw DaemonException("IPFS Uninstall")
             val env =
-                    arrayOf("IPFS_PATH=${repoPath.absoluteFile}", "GOLOG_FILE=${log.absoluteFile}")
+                arrayOf("IPFS_PATH=${repoPath.absoluteFile}", "GOLOG_FILE=${log.absoluteFile}")
             val command = binaryFile.absolutePath + " " + cmd
             val exec = try {
                 Runtime.getRuntime().exec(command, env)
@@ -433,26 +433,35 @@ class Daemon(_context: Context) {
         }
 
         private fun filterError(cmd: String, error: String, throwable: Boolean = true): Boolean {
-            val isError = error.isNotEmpty() &&
-                    error.indexOf("ipfs configuration file already exists!") < 0 &&
-                    error.indexOf("ipfs daemon is running. please stop it to run this command") < 0
-            if (isError) {
-                w("IPFS error:$error", TAG)
-                if (throwable) {
-                    if (error.indexOf("connection reset by peer") >= 0)
-                        throw ConnectionResetException()
-                    else
-                        throw DaemonException("IPFS Cmd [$cmd] Exception:\n$error")
+            if (error.isEmpty())
+                return true
+            if (cmd != "repo fsck" && error.indexOf("someone else has the lock") >= 0) {
+                return runCatching {
+                    run("repo fsck")
+                    true
+                }.getOrElse { false }
+            } else {
+                val isError = error.indexOf("ipfs configuration file already exists!") < 0 &&
+                        error.indexOf("ipfs daemon is running. please stop it to run this command") < 0
+                if (isError) {
+                    w("IPFS error:$error", TAG)
+                    if (throwable) {
+                        if (error.indexOf("connection reset by peer") >= 0)
+                            throw ConnectionResetException()
+                        else
+                            throw DaemonException("IPFS Cmd [$cmd] Exception:\n$error")
+                    }
                 }
+                return isError
             }
-            return isError
+
         }
 
         private fun logStream(
-                stream: InputStream,
-                cmd: String,
-                tag: String = "LOG",
-                pr: Boolean = true
+            stream: InputStream,
+            cmd: String,
+            tag: String = "LOG",
+            pr: Boolean = true
         ): String {
             if (pr)
                 d("logStream", TAG)
@@ -492,4 +501,4 @@ class CompatibilityException(msg: String = "Unknown Compatibility Exception") : 
 class ConnectionResetException(msg: String = "connection reset by peer") : DaemonException(msg)
 
 class InitializationException(msg: String?) :
-        DaemonException("Initialization of IPFS failed, maybe it is running or has been initialized\nError message:\n$msg")
+    DaemonException("Initialization of IPFS failed, maybe it is running or has been initialized\nError message:\n$msg")

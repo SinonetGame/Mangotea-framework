@@ -1,0 +1,6 @@
+include ':view'
+include ':rely'
+include ':http'
+include ':ipfs'
+include ':cage'
+rootProject.name = "MangoteaFramework"

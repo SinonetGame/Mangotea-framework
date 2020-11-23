@@ -1,6 +1,5 @@
 package com.mangotea.rely.net
 
-import com.mangotea.rely.d
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -44,16 +43,12 @@ val CharSequence.isIPv4: Boolean get() = IPAddressUtil.isIPv4LiteralAddress(this
 val CharSequence.isIPv6: Boolean get() = IPAddressUtil.isIPv6LiteralAddress(this.toString())
 
 val CharSequence?.isPublicIp: Boolean
-    get() = if (this == "127.0.0.1" || this == "localhost")
+    get() = if (isNullOrEmpty() || this == "127.0.0.1" || this == "localhost")
         false
     else !this.isInternalIp
 
 val CharSequence?.isInternalIp: Boolean
-    get() = if (isNullOrEmpty()) false else IPAddressUtil.textToNumericFormatV4(this.toString().apply {
-        d("InternalIp[$this]", "ADDRESS")
-    }).isInternalIp.apply {
-        d("isInternalIp[$this]", "ADDRESS")
-    }
+    get() = if (isNullOrEmpty()) false else IPAddressUtil.textToNumericFormatV4(this.toString()).isInternalIp
 val ByteArray.isInternalIp: Boolean
     get() {
         val b0 = this[0]

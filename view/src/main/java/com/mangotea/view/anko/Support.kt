@@ -7,11 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.mangotea.view.support.SuperActivity
+import com.mangotea.view.support.SuperAppCompatActivity
 import com.mangotea.view.support.SuperFragment
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.AnkoContextImpl
 
-abstract class AnkoActivity : SuperActivity() {
+abstract class AnkoActivity : SuperAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

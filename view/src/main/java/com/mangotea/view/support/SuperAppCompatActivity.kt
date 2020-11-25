@@ -3,10 +3,11 @@ package com.mangotea.view.support
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.mangotea.rely.d
 import org.jetbrains.anko.internals.AnkoInternals
 
-open class SuperActivity : Activity() {
+open class SuperAppCompatActivity : AppCompatActivity() {
 
     private val _clickListener by lazy { View.OnClickListener { v -> onClickView(v) } }
 

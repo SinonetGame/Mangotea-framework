@@ -7,12 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.mangotea.view.support.SuperActivity
-import com.mangotea.view.support.SuperAppCompatActivity
 import com.mangotea.view.support.SuperFragment
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.AnkoContextImpl
 
-abstract class AnkoActivity : SuperAppCompatActivity() {
+abstract class AnkoActivity : SuperActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +30,9 @@ abstract class AnkoActivity : SuperAppCompatActivity() {
 abstract class AnkoFragment : SuperFragment() {
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View = AnkoContext.create(context!!).ui()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

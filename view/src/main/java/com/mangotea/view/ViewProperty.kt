@@ -64,6 +64,34 @@ var ConstraintLayout.LayoutParams.endOf: Int
         verticalOf = value
     }
 
+var ConstraintLayout.LayoutParams.toTopOf: Int
+    get() = bottomToTop
+    set(value) {
+        bottomToTop = value
+        horizontalOf = value
+    }
+
+var ConstraintLayout.LayoutParams.toBottomOf: Int
+    get() = topToBottom
+    set(value) {
+        horizontalOf = value
+        topToBottom = value
+    }
+
+var ConstraintLayout.LayoutParams.toStartOf: Int
+    get() = endToStart
+    set(value) {
+        endToStart = value
+        verticalOf = value
+    }
+
+var ConstraintLayout.LayoutParams.toEndOf: Int
+    get() = startToEnd
+    set(value) {
+        startToEnd = value
+        verticalOf = value
+    }
+
 var ConstraintLayout.LayoutParams.horizontalOf: Int
     get() = startToStart
     set(value) {
@@ -122,10 +150,10 @@ var RecyclerView.decoration: Int
     set(value) {
         this.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
             ) {
                 val position = parent.getChildAdapterPosition(view)
                 if (value > 0) {
@@ -216,40 +244,40 @@ var SimpleDraweeView.cornerRadiusTopLeft
     get() = hierarchy.roundingParams?.cornersRadii?.let { it[0] }?.toFloat() ?: 0f
     set(value) {
         hierarchy.roundingParams =
-                RoundingParams.fromCornersRadii(
-                        value,
-                        cornerRadiusTopRight, cornerRadiusBottomRight, cornerRadiusBottomLeft
-                )
+            RoundingParams.fromCornersRadii(
+                value,
+                cornerRadiusTopRight, cornerRadiusBottomRight, cornerRadiusBottomLeft
+            )
     }
 
 var SimpleDraweeView.cornerRadiusTopRight
     get() = hierarchy.roundingParams?.cornersRadii?.let { it[1] }?.toFloat() ?: 0f
     set(value) {
         hierarchy.roundingParams =
-                RoundingParams.fromCornersRadii(
-                        cornerRadiusTopLeft, value,
-                        cornerRadiusBottomRight, cornerRadiusBottomLeft
-                )
+            RoundingParams.fromCornersRadii(
+                cornerRadiusTopLeft, value,
+                cornerRadiusBottomRight, cornerRadiusBottomLeft
+            )
     }
 
 var SimpleDraweeView.cornerRadiusBottomRight
     get() = hierarchy.roundingParams?.cornersRadii?.let { it[2] }?.toFloat() ?: 0f
     set(value) {
         hierarchy.roundingParams =
-                RoundingParams.fromCornersRadii(
-                        cornerRadiusTopLeft,
-                        cornerRadiusTopRight, value, cornerRadiusBottomLeft
-                )
+            RoundingParams.fromCornersRadii(
+                cornerRadiusTopLeft,
+                cornerRadiusTopRight, value, cornerRadiusBottomLeft
+            )
     }
 
 var SimpleDraweeView.cornerRadiusBottomLeft
     get() = hierarchy.roundingParams?.cornersRadii?.let { it[3] }?.toFloat() ?: 0f
     set(value) {
         hierarchy.roundingParams =
-                RoundingParams.fromCornersRadii(
-                        cornerRadiusTopLeft,
-                        cornerRadiusTopRight, cornerRadiusBottomRight, value
-                )
+            RoundingParams.fromCornersRadii(
+                cornerRadiusTopLeft,
+                cornerRadiusTopRight, cornerRadiusBottomRight, value
+            )
     }
 
 var GradientDrawable.colorSet
@@ -289,7 +317,7 @@ var GradientDrawable.cornerRadiusRight
 var GradientDrawable.cornerRadiusTopLeft
     @SuppressLint("NewApi") @RequiresApi(Build.VERSION_CODES.N)
     get() = kotlin.runCatching { cornerRadii?.let { (it[0] + it[1]) / 2f }?.toFloat() }.getOrNull()
-            ?: 0f
+        ?: 0f
     set(value) {
         cornerRadius(value, cornerRadiusTopRight, cornerRadiusBottomRight, cornerRadiusBottomLeft)
     }
@@ -297,7 +325,7 @@ var GradientDrawable.cornerRadiusTopLeft
 var GradientDrawable.cornerRadiusTopRight
     @SuppressLint("NewApi") @RequiresApi(Build.VERSION_CODES.N)
     get() = kotlin.runCatching { cornerRadii?.let { (it[2] + it[3]) / 2f }?.toFloat() }.getOrNull()
-            ?: 0f
+        ?: 0f
     set(value) {
         cornerRadius(cornerRadiusTopLeft, value, cornerRadiusBottomRight, cornerRadiusBottomLeft)
     }
@@ -305,7 +333,7 @@ var GradientDrawable.cornerRadiusTopRight
 var GradientDrawable.cornerRadiusBottomRight
     @SuppressLint("NewApi") @RequiresApi(Build.VERSION_CODES.N)
     get() = kotlin.runCatching { cornerRadii?.let { (it[4] + it[5]) / 2f }?.toFloat() }.getOrNull()
-            ?: 0f
+        ?: 0f
     set(value) {
         cornerRadius(cornerRadiusTopLeft, cornerRadiusTopRight, value, cornerRadiusBottomLeft)
     }
@@ -314,17 +342,22 @@ var GradientDrawable.cornerRadiusBottomRight
 var GradientDrawable.cornerRadiusBottomLeft
     @SuppressLint("NewApi") @RequiresApi(Build.VERSION_CODES.N)
     get() = kotlin.runCatching { cornerRadii?.let { (it[6] + it[7]) / 2f }?.toFloat() }.getOrNull()
-            ?: 0f
+        ?: 0f
     set(value) {
         cornerRadius(cornerRadiusTopLeft, cornerRadiusTopRight, cornerRadiusBottomRight, value)
     }
 
-fun GradientDrawable.cornerRadius(topleft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
+fun GradientDrawable.cornerRadius(
+    topleft: Float,
+    topRight: Float,
+    bottomRight: Float,
+    bottomLeft: Float
+) {
     cornerRadii = floatArrayOf(
-            topleft, topleft,
-            topRight, topRight,
-            bottomRight, bottomRight,
-            bottomLeft, bottomLeft
+        topleft, topleft,
+        topRight, topRight,
+        bottomRight, bottomRight,
+        bottomLeft, bottomLeft
     )
 }
 
@@ -392,7 +425,7 @@ var EditText.textCursorColor: Int
     set(color) {
         try {
             val fCursorDrawableRes =
-                    TextView::class.java.getDeclaredField("mCursorDrawableRes")//获取这个字段
+                TextView::class.java.getDeclaredField("mCursorDrawableRes")//获取这个字段
             fCursorDrawableRes.isAccessible = true//代表这个字段、方法等等可以被访问
             val mCursorDrawableRes = fCursorDrawableRes.getInt(this)
 
@@ -405,8 +438,8 @@ var EditText.textCursorColor: Int
             fCursorDrawable.isAccessible = true
 
             val drawables = arrayOf(
-                    this.context.drawable(mCursorDrawableRes),
-                    this.context.drawable(mCursorDrawableRes)
+                this.context.drawable(mCursorDrawableRes),
+                this.context.drawable(mCursorDrawableRes)
             )
             drawables[0]?.setColorFilter(color, PorterDuff.Mode.SRC_IN)//SRC_IN 上下层都显示。下层居上显示。
             drawables[1]?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
@@ -436,7 +469,8 @@ val CollapsingToolbarLayout.parallax
 
 val Context.statusBarHeight
     get() = resources.getIdentifier("status_bar_height", "dimen", "android").let {
-        if (it > 0) resources.getDimensionPixelSize(it) else kotlin.math.ceil((20 * this.resources.displayMetrics.density).toDouble()).toInt()
+        if (it > 0) resources.getDimensionPixelSize(it) else kotlin.math.ceil((20 * this.resources.displayMetrics.density).toDouble())
+            .toInt()
     }
 
 val Fragment.statusBarHeight

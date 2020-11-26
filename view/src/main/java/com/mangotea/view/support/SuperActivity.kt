@@ -3,10 +3,11 @@ package com.mangotea.view.support
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.fragment.app.FragmentActivity
 import com.mangotea.rely.d
 import org.jetbrains.anko.internals.AnkoInternals
 
-open class SuperActivity : Activity() {
+open class SuperActivity : FragmentActivity() {
 
     private val _clickListener by lazy { View.OnClickListener { v -> onClickView(v) } }
 
@@ -26,8 +27,8 @@ open class SuperActivity : Activity() {
     }
 
     inline fun <reified T : Activity> startActivityForResult(
-            vararg params: Pair<String, Any?>,
-            noinline blo: (Int, Intent?) -> Unit
+        vararg params: Pair<String, Any?>,
+        noinline blo: (Int, Intent?) -> Unit
     ) {
         val requestCode: Int = androidx.core.view.ViewCompat.generateViewId()
         this.resultMap[requestCode] = blo
@@ -35,18 +36,18 @@ open class SuperActivity : Activity() {
     }
 
     fun startActivityForResult(
-            intent: Intent,
-            requestCode: Int = androidx.core.view.ViewCompat.generateViewId(),
-            blo: (Int, Intent?) -> Unit
+        intent: Intent,
+        requestCode: Int = androidx.core.view.ViewCompat.generateViewId(),
+        blo: (Int, Intent?) -> Unit
     ) {
         this.resultMap[requestCode] = blo
         startActivityForResult(intent, requestCode)
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         d("$requestCode - - $permissionResults", "IPFS")

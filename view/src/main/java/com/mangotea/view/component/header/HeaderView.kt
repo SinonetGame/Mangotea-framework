@@ -21,7 +21,7 @@ import org.jetbrains.anko.wrapContent
 /**
  * Created by dydyt on 2016/12/21.
  */
-class HeaderView : _ConstraintLayout {
+open class HeaderView : _ConstraintLayout {
     private var _title: HeaderBlock? = null
     private var _left: HeaderBlock? = null
     private var _right: HeaderBlock? = null

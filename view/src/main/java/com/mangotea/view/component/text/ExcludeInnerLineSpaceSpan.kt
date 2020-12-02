@@ -6,7 +6,7 @@ import android.text.Spanned
 import android.text.style.LineHeightSpan
 import android.widget.TextView
 
-class ExcludeInnerLineSpaceSpan(private var mHeight: Int) : LineHeightSpan {
+open class ExcludeInnerLineSpaceSpan(private var mHeight: Int) : LineHeightSpan {
 
     override fun chooseHeight(text: CharSequence?, start: Int, end: Int, spanstartv: Int, lineHeight: Int, fm: Paint.FontMetricsInt) { // 原始行高
         val originHeight: Int = fm.descent - fm.ascent

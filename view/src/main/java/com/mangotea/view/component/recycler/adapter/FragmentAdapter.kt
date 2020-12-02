@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class FragmentAdapter<P> : FragmentStateAdapter {
+open class FragmentAdapter<P> : FragmentStateAdapter {
     private val _datas: MutableList<P>
 
     constructor(fragmentActivity: FragmentActivity, datas: MutableList<P>) : super(fragmentActivity) {

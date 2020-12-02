@@ -10,7 +10,7 @@ import com.gyf.immersionbar.ktx.immersionBar
 import com.mangotea.view.isLightColor
 
 
-class StatusBarView : View {
+open class StatusBarView : View {
     @RequiresApi(api = 21)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(
             context,

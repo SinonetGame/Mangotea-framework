@@ -11,7 +11,7 @@ import org.jetbrains.anko.AnkoContext
 
 
 @Suppress("ClassName")
-class _RefreshFooter @JvmOverloads constructor(
+open class _RefreshFooter @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : _InternalAbstract(context, attrs, defStyleAttr), RefreshFooter {
 

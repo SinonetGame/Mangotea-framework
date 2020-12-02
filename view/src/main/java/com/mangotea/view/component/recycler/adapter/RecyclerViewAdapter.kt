@@ -14,7 +14,7 @@ import com.mangotea.view.onClick
 import org.jetbrains.anko.AnkoContext
 
 
-class RecyclerViewAdapter<E>(
+open class RecyclerViewAdapter<E>(
     private val layoutResId: Int,
     private var creator: AnkoTypeAdapter?
 ) : RecyclerView.Adapter<RecyclerViewHolder<E>>(), DataAdapter<E> {

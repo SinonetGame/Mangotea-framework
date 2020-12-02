@@ -8,7 +8,7 @@ import com.mangotea.view.onClick
 /**
  * 自由的单选组
  */
-class UnrulyRadioGroup<V : ViewGroup>(private val viewGroup: V) {
+open class UnrulyRadioGroup<V : ViewGroup>(private val viewGroup: V) {
 
     private var mCheckedId = -1
     private val selectables by lazy { hashMapOf<Int, IntArray>() }

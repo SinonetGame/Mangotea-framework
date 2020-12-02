@@ -10,7 +10,7 @@ import com.mangotea.view.drawableLeft
 import com.mangotea.view.drawableRight
 import org.jetbrains.anko.lines
 
-class TextHeaderBlock @JvmOverloads constructor(
+open class TextHeaderBlock @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

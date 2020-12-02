@@ -8,7 +8,7 @@ import androidx.core.view.NestedScrollingParentHelper
 import android.view.View
 import org.jetbrains.anko.constraint.layout._ConstraintLayout
 
-class NestedScrollingConstraintLayout(ctx: Context) : _ConstraintLayout(ctx), NestedScrollingChild2,
+open class NestedScrollingConstraintLayout(ctx: Context) : _ConstraintLayout(ctx), NestedScrollingChild2,
     NestedScrollingParent  {
     private var _nestedScrollingChildHelper: NestedScrollingChildHelper = NestedScrollingChildHelper(this)
     private var _nestedScrollingParentHelper: NestedScrollingParentHelper = NestedScrollingParentHelper(this)

@@ -9,6 +9,7 @@ import com.mangotea.rely.Pre
 import com.mangotea.rely.WeakRef
 import com.mangotea.rely.weakRefrence
 import com.mangotea.view.anko.AnkoTypeAdapter
+import com.mangotea.view.component.adapter.AdapterBuilder
 import com.mangotea.view.component.recycler.holder.RecyclerViewHolder
 import com.mangotea.view.onClick
 import org.jetbrains.anko.AnkoContext
@@ -17,7 +18,8 @@ import org.jetbrains.anko.AnkoContext
 open class RecyclerViewAdapter<E>(
     private val layoutResId: Int,
     private var creator: AnkoTypeAdapter?
-) : RecyclerView.Adapter<RecyclerViewHolder<E>>(), DataAdapter<E> {
+) : RecyclerView.Adapter<RecyclerViewHolder<E>>(), DataAdapter<E>,
+    AdapterBuilder<E, RecyclerViewAdapter<E>> {
 
     constructor(creator: AnkoTypeAdapter) : this(0, creator)
     constructor(layoutResId: Int) : this(layoutResId, null)
@@ -61,28 +63,32 @@ open class RecyclerViewAdapter<E>(
         this._recyclerView = null
     }
 
-    fun render(renderItemBlock: View.(item: E, i: Int, type: Int) -> Unit): RecyclerViewAdapter<E> {
+    override fun render(renderItemBlock: View.(item: E, i: Int, type: Int) -> Unit): RecyclerViewAdapter<E> {
         this._renderItemBlock = renderItemBlock
         return this
     }
 
 
-    fun update(renderItemBlock: View.(item: E, i: Int, type: Int, payLoads: MutableList<Any>) -> Unit): RecyclerViewAdapter<E> {
+    override fun update(renderItemBlock: View.(item: E, i: Int, type: Int, payLoads: MutableList<Any>) -> Unit): RecyclerViewAdapter<E> {
         this._payLoadsRenderItemBlock = renderItemBlock
         return this
     }
 
     private var _itemClick: ((View, Int, E) -> Unit)? = null
-    fun itemClick(blo: (View, Int, E) -> Unit): RecyclerViewAdapter<E> {
+    override fun itemClick(blo: (View, Int, E) -> Unit): RecyclerViewAdapter<E> {
         _itemClick = blo
         return this
     }
 
-    fun itemClick(blo: (E) -> Unit): RecyclerViewAdapter<E> = itemClick { _, _, data -> blo(data) }
+    override fun itemClick(blo: (E) -> Unit): RecyclerViewAdapter<E> =
+        itemClick { _, _, data -> blo(data) }
 
     private val _clickIds by lazy { hashSetOf<Int>() }
     private var _itemViewClick: ((View, Int, E) -> Unit)? = null
-    fun itemViewClick(vararg ids: Int, blo: (View, Int, E) -> Unit): RecyclerViewAdapter<E> {
+    override fun itemViewClick(
+        vararg ids: Int,
+        blo: (View, Int, E) -> Unit
+    ): RecyclerViewAdapter<E> {
         if (ids.isEmpty())
             return this
         _itemViewClick = blo
@@ -126,7 +132,7 @@ open class RecyclerViewAdapter<E>(
         payloads: MutableList<Any>
     ) {
         super.onBindViewHolder(holder, position, payloads)
-        if (payloads.isNotEmpty()){
+        if (payloads.isNotEmpty()) {
             val itemData = this.datas[position]
             holder.renderView(itemData, position, payloads)
         }
@@ -134,7 +140,7 @@ open class RecyclerViewAdapter<E>(
 
     private var _typeFinder: ((Int, E) -> Int)? = null
 
-    fun typeFinder(blo: (Int, E) -> Int): RecyclerViewAdapter<E> {
+    override fun typeFinder(blo: (Int, E) -> Int): RecyclerViewAdapter<E> {
         _typeFinder = blo
         return this
     }

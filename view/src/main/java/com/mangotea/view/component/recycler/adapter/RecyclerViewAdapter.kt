@@ -19,7 +19,7 @@ open class RecyclerViewAdapter<E>(
     private val layoutResId: Int,
     private var creator: AnkoTypeAdapter?
 ) : RecyclerView.Adapter<RecyclerViewHolder<E>>(), DataAdapter<E>,
-    AdapterBuilder<E, RecyclerViewAdapter<E>> {
+    AdapterBuilder<E> {
 
     constructor(creator: AnkoTypeAdapter) : this(0, creator)
     constructor(layoutResId: Int) : this(layoutResId, null)

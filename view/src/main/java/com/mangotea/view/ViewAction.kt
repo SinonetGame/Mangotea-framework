@@ -325,9 +325,9 @@ fun <T : View> Fragment.view(id: Int) = IdView<T>(id, this)
 fun <T : View> Dialog.view(id: Int) = IdView<T>(id, this)
 
 fun <T : View> Activity.viewOptional(id: Int) = IdViewOptional<T>(id, this)
-fun <T : View> View.viewOptional(id: Int) = IdView<T>(id, this)
-fun <T : View> Fragment.viewOptional(id: Int) = IdView<T>(id, this)
-fun <T : View> Dialog.viewOptional(id: Int) = IdView<T>(id, this)
+fun <T : View> View.viewOptional(id: Int) = IdViewOptional<T>(id, this)
+fun <T : View> Fragment.viewOptional(id: Int) = IdViewOptional<T>(id, this)
+fun <T : View> Dialog.viewOptional(id: Int) = IdViewOptional<T>(id, this)
 
 /**-----------------------------------Others---------------------------------------*/
 @JvmOverloads

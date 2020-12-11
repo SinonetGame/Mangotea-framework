@@ -125,61 +125,64 @@ class Chain<E>(cause: Knot<*, E>) {
      * @param dispatcher 指定对应协程
      * @param return 返回最后一个链节点的处理结果
      */
-    suspend fun await(dispatcher: CoroutineDispatcher = childCoroutine, vararg pair: Pair<Any, Any?>): E? =
-            async(dispatcher) {
-                try {
-                    if (_cause == null)
-                        throw Throwable("this chain was destoryed!")
-                    _cause?.let { theCause ->
+    suspend fun await(
+        dispatcher: CoroutineDispatcher = childCoroutine,
+        vararg pair: Pair<Any, Any?>
+    ): E? =
+        async(dispatcher) {
+            try {
+                if (_cause == null)
+                    throw Throwable("this chain was destoryed!")
+                _cause?.let { theCause ->
 //                    theCause.box.mainJob=this
-                        val cTime = currentTimeMillis
-                        runCatching {
-                            pair.forEach { theCause.box.add(*pair) }
-                            _onStart?.invoke(theCause.box, this@Chain)
-                            if (timeout > 0)
-                                withTimeout(timeout) {
-                                    theCause.start()
-                                }
-                            else
+                    val cTime = currentTimeMillis
+                    runCatching {
+                        pair.forEach { theCause.box.add(*pair) }
+                        _onStart?.invoke(theCause.box, this@Chain)
+                        if (timeout > 0)
+                            withTimeout(timeout) {
                                 theCause.start()
-                        }.onFailure { throwable ->
-                            when (throwable) {
-                                is BreakChainThrowable -> _onBreak?.invoke(
-                                        theCause.box,
-                                        this@Chain, throwable.message
-                                )
-                                is TimeoutCancellationException -> _onTimeout?.invoke(
-                                        theCause.box,
-                                        this@Chain
-                                )
-                                is CancellationException -> {
-                                    if (throwable.message == cancellMessage)
-                                        _onCancel?.invoke(theCause.box, this@Chain)
-                                }
-                                else -> {
-                                    throwable.e("CHAIN-ERROR")
-                                    _onFailure?.invoke(theCause.box, this@Chain, throwable)
-                                }
                             }
-                        }.getOrNull().apply {
-                            await {
-                                val usedTime = currentTimeMillis - cTime
-                                if (usedTime < leastTime) {
-                                    delay(leastTime - usedTime)
-                                }
+                        else
+                            theCause.start()
+                    }.onFailure { throwable ->
+                        when (throwable) {
+                            is BreakChainThrowable -> _onBreak?.invoke(
+                                theCause.box,
+                                this@Chain, throwable.message
+                            )
+                            is TimeoutCancellationException -> _onTimeout?.invoke(
+                                theCause.box,
+                                this@Chain
+                            )
+                            is CancellationException -> {
+                                if (throwable.message == cancellMessage)
+                                    _onCancel?.invoke(theCause.box, this@Chain)
                             }
-                            currentStep = DONE
-                            _finally?.invoke(theCause.box, this@Chain)
-                            next?.run { first.call(second) }
+                            else -> {
+                                throwable.e("CHAIN-ERROR")
+                                _onFailure?.invoke(theCause.box, this@Chain, throwable)
+                            }
                         }
+                    }.getOrNull().apply {
+                        await {
+                            val usedTime = currentTimeMillis - cTime
+                            if (usedTime < leastTime) {
+                                delay(leastTime - usedTime)
+                            }
+                        }
+                        currentStep = DONE
+                        _finally?.invoke(theCause.box, this@Chain)
+                        next?.run { first.call(second) }
                     }
-                } catch (e: CancellationException) {
-                    if (e.message == cancellMessage) {
-                        _onCancel?.invoke(_cause?.box, this@Chain)
-                    }
-                    null
                 }
-            }.apply { job = this }.await()
+            } catch (e: Exception) {
+                if (e.message == cancellMessage && e is CancellationException) {
+                    _onCancel?.invoke(_cause?.box, this@Chain)
+                }
+                null
+            }
+        }.apply { job = this }.await()
 
 
     /**
@@ -188,12 +191,12 @@ class Chain<E>(cause: Knot<*, E>) {
      * @return 返回协程块所对应的[Job]
      */
     fun call(dispatcher: CoroutineDispatcher = childCoroutine, vararg pair: Pair<Any, Any?>) =
-            launch {
-                if (!destroyed) {
-                    currentStep = REDAY
-                    await(dispatcher, *pair)
-                }
+        launch {
+            if (!destroyed) {
+                currentStep = REDAY
+                await(dispatcher, *pair)
             }
+        }
 
     /**
      * 启用任务链并在最终销毁。
@@ -202,9 +205,9 @@ class Chain<E>(cause: Knot<*, E>) {
      * @return 返回协程块所对应的[Job]
      */
     fun single(dispatcher: CoroutineDispatcher = childCoroutine, vararg pair: Pair<Any, Any?>) =
-            onFinally {
-                it.destory()
-            }.call(dispatcher, *pair)
+        onFinally {
+            it.destory()
+        }.call(dispatcher, *pair)
 
     /**
      * 终止任务链并抛出[CancellationException]异常，指定其message为[cancellMessage]
@@ -231,7 +234,6 @@ class Chain<E>(cause: Knot<*, E>) {
         val next = chain.next?.first
         return if (next == null) chain else findExtremity(next)
     }
-
 
 
     val box: Box?

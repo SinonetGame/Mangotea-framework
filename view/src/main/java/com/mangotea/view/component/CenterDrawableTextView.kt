@@ -1,23 +1,42 @@
 package com.mangotea.view.component
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatTextView
+import android.widget.TextView
 
-
-open class CenterDrawableTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    AppCompatTextView(context, attrs, defStyleAttr) {
+@SuppressLint("AppCompatCustomView")
+open class CenterDrawableTextView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : TextView(context, attrs, defStyleAttr) {
     private var drawables: Array<Drawable?> = arrayOf<Drawable?>(null, null, null, null)
     private var widths: IntArray = intArrayOf(0, 0, 0, 0)
     private var heights: IntArray = intArrayOf(0, 0, 0, 0)
 
 
-    override fun setCompoundDrawables(left: Drawable?, top: Drawable?, right: Drawable?, bottom: Drawable?) {
+    override fun setCompoundDrawables(
+        left: Drawable?,
+        top: Drawable?,
+        right: Drawable?,
+        bottom: Drawable?
+    ) {
         val drawables = arrayOf<Drawable?>(left, top, right, bottom)
-        val widths: IntArray = intArrayOf(left?.intrinsicWidth ?: 0, top?.intrinsicWidth ?: 0, right?.intrinsicWidth ?: 0, bottom?.intrinsicWidth ?: 0)
-        val heights: IntArray = intArrayOf(left?.intrinsicHeight ?: 0, top?.intrinsicHeight ?: 0, right?.intrinsicHeight ?: 0, bottom?.intrinsicHeight ?: 0)
+        val widths: IntArray = intArrayOf(
+            left?.intrinsicWidth ?: 0,
+            top?.intrinsicWidth ?: 0,
+            right?.intrinsicWidth ?: 0,
+            bottom?.intrinsicWidth ?: 0
+        )
+        val heights: IntArray = intArrayOf(
+            left?.intrinsicHeight ?: 0,
+            top?.intrinsicHeight ?: 0,
+            right?.intrinsicHeight ?: 0,
+            bottom?.intrinsicHeight ?: 0
+        )
         setDrawables(drawables, widths, heights)
     }
 
@@ -38,7 +57,9 @@ open class CenterDrawableTextView @JvmOverloads constructor(context: Context, at
         super.onDraw(canvas)
         val centerX = (width + paddingLeft - paddingRight) / 2.toFloat()
         val centerY = (height + paddingTop - paddingBottom) / 2.toFloat()
-        val halfTextWidth = paint.measureText(if (text.toString().isEmpty()) hint.toString() else text.toString()) / 2
+        val halfTextWidth = paint.measureText(
+            if (text.toString().isEmpty()) hint.toString() else text.toString()
+        ) / 2
         val fontMetrics = paint.fontMetrics
         val halfTextHeight = (fontMetrics.descent - fontMetrics.ascent) / 2
         if (drawables[0] != null) {

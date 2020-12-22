@@ -15,7 +15,7 @@ open class CagePile<T>(private val key: String) : MutableCollection<T>, List<T> 
 
     override fun containsAll(elements: Collection<T>): Boolean = pile.containsAll(elements)
 
-    override fun isEmpty(): Boolean = cage.pileContains(key)
+    override fun isEmpty(): Boolean = size <= 0
 
     override fun iterator(): MutableIterator<T> = pile.iterator()
 
@@ -29,9 +29,11 @@ open class CagePile<T>(private val key: String) : MutableCollection<T>, List<T> 
 
     override fun remove(element: T): Boolean = cage.remove<T>(key) { it == element }
 
-    override fun removeAll(elements: Collection<T>): Boolean = cage.removes<T>(key) { elements.contains(it) }
+    override fun removeAll(elements: Collection<T>): Boolean =
+        cage.removes<T>(key) { elements.contains(it) }
 
-    override fun retainAll(elements: Collection<T>): Boolean = cage.removes<T>(key) { !elements.contains(it) }
+    override fun retainAll(elements: Collection<T>): Boolean =
+        cage.removes<T>(key) { !elements.contains(it) }
 
     open fun removeIf(where: (T) -> Boolean) = cage.removes(key, where)
 

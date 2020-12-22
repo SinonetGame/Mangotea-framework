@@ -66,15 +66,19 @@ fun <T> Collection<T>.hashRandom(count: Int): ArrayList<T> {
     return data
 }
 
+/**
+ * fromIndex (包含)
+ * toIndex （不包含）
+ */
 fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> {
     return if (fromIndex >= size || fromIndex == toIndex) arrayListOf()
-    else if (toIndex >= size) subList(fromIndex, size - 1)
+    else if (toIndex >= size) subList(fromIndex, size)
     else subList(fromIndex, toIndex)
 }
 
 inline fun <T> Iterable<T>.containsAll(
-        elements: Collection<@UnsafeVariance T>,
-        eq: T.(T) -> Boolean
+    elements: Collection<@UnsafeVariance T>,
+    eq: T.(T) -> Boolean
 ): Boolean {
     forEach { o ->
         elements.find { i -> o.eq(i) }?.let { return false }
@@ -110,7 +114,7 @@ enum class CTimeUnit(var modulus: Long) {
     HOUR(60 * 60 * 1000), MINUTE(60 * 1000), SECONDS(1000), MILLI(1)
 }
 
-val CharSequence.md5:String
+val CharSequence.md5: String
     get() = if (isEmpty()) ""
     else runCatching {
         val md5 = MessageDigest.getInstance("MD5")
@@ -128,8 +132,8 @@ val CharSequence.md5:String
 
 val String.base64Encode: String
     get() = android.util.Base64.encodeToString(
-            toByteArray(Charsets.UTF_8),
-            android.util.Base64.DEFAULT
+        toByteArray(Charsets.UTF_8),
+        android.util.Base64.DEFAULT
     )
 val String.base64Decode: String
     get() = android.util.Base64.decode(this, android.util.Base64.DEFAULT).let {

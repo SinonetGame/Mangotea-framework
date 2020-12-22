@@ -67,6 +67,7 @@ fun <T> Collection<T>.hashRandom(count: Int): ArrayList<T> {
 }
 
 /**
+ * 安全截取List 0到指定项的列表，如果不足则取完
  * fromIndex (包含)
  * toIndex （不包含）
  */

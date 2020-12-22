@@ -68,8 +68,9 @@ fun <T> Collection<T>.hashRandom(count: Int): ArrayList<T> {
 
 /**
  * 安全截取List 0到指定项的列表，如果不足则取完
- * fromIndex (包含)
- * toIndex （不包含）
+ * @param fromIndex (包含)
+ * @param toIndex （不包含）
+ * @return
  */
 fun <T> List<T>.safeSubList(fromIndex: Int, toIndex: Int): List<T> {
     return if (fromIndex >= size || fromIndex == toIndex) arrayListOf()

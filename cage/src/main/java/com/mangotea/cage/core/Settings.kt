@@ -36,15 +36,30 @@ object Settings {
     }
 
     operator fun <T> set(key: String, value: T) {
+        val old: Any? = get(key)
         cage["setting-$key"] = value
+        listners.forEach {
+            it(key, value, old)
+        }
     }
 
     fun remove(key: String) {
+        val old: Any? = get(key)
         cage.delete("setting-$key")
         app().dataRemove("setting-$key")
+        listners.forEach {
+            it(key, null, old)
+        }
     }
 
+    private val listners by lazy { hashSetOf<(key: String, new: Any?, old: Any?) -> Unit>() }
+    fun addSettingChangedListener(blo: (key: String, new: Any?, old: Any?) -> Unit) {
+        listners.add(blo)
+    }
 
+    fun removeSettingChangedListner(blo: (key: String, new: Any?, old: Any?) -> Unit) {
+        listners.remove(blo)
+    }
 }
 
 infix fun <V : Serializable> String.set(that: V) {

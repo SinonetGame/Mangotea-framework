@@ -182,25 +182,36 @@ class Daemon(_context: Context) {
         var daemonProcess: Process? = null
             private set
 
+        private val DAEMON_UNSTART = "try running 'ipfs daemon' first"
         private val exMsgs by lazy {
-            arrayListOf("cannot connect to the api. Is the deamon running?",
-                "try running 'ipfs daemon' first",
+            arrayListOf(
+                "cannot connect to the api. Is the deamon running?",
+                DAEMON_UNSTART,
                 "cannot acquire lock: Lock FcntlFlock of",
-//                "this action must be run in online mode",
                 "no IPFS repo found in",
-                "please run: 'ipfs init'")
+                "please run: 'ipfs init'"
+            )
         }
         val working: Boolean
             get() {
                 return try {
+                    if (restarting)
+                        return false
                     val cmd = "swarm peers"
                     val exec = cmd(cmd, false)
                     var error = logStream(exec.errorStream, cmd, "error", false)
                     val output = logStream(exec.inputStream, cmd, "input", false)
-                    var working = if (context.netWorkType == NETWORK_NO)
-                        error.isNullOrEmpty() && output.isNullOrEmpty()
-                    else {
-                        exMsgs.find { error.contains(it) || output.contains(it) }?.let { false } ?: true
+
+                    var working = when {
+                        context.netWorkType == NETWORK_NO -> error.isNullOrEmpty() && output.isNullOrEmpty()
+                        error.contains(DAEMON_UNSTART) -> {
+                            startDaemon()
+                            false
+                        }
+                        else -> {
+                            exMsgs.find { error.contains(it) || output.contains(it) }?.let { false }
+                                ?: true
+                        }
                     }
                     working.d("IPFS-isWorking")
                     if (!working) {
@@ -315,18 +326,29 @@ class Daemon(_context: Context) {
             initialized = true
         }
 
-
         fun start(frontMode: String? = null, behindMode: String? = null) {
+            this.frontMode = frontMode
+            this.behindMode = behindMode
             if (!initialized && !initializing)
                 init()
+            startDaemon()
+        }
+
+        private var restarting = false
+        private var frontMode: String? = null
+        private var behindMode: String? = null
+        private fun startDaemon() {
+            restarting = true
             if (daemonProcess != null) {
-                daemonProcess?.destroy()
+                runCatching { daemonProcess?.destroy() }
                 daemonProcess = null
             }
             val behind = if (!behindMode.isNullOrEmpty()) " $behindMode" else ""
             val front = if (!frontMode.isNullOrEmpty()) " $frontMode " else ""
             val cmd = "${front}daemon$behind"
-            daemonProcess = daemonCmd(cmd)
+            daemonProcess = daemonCmd(cmd) {
+                restarting = false
+            }
         }
 
 
@@ -386,7 +408,7 @@ class Daemon(_context: Context) {
             return exec
         }
 
-        private fun daemonCmd(cmd: String): Process {
+        private fun daemonCmd(cmd: String, blo: (() -> Unit)? = null): Process {
             val exec = cmd(cmd)
             d("daemon:$exec")
             GlobalScope.async(childCoroutine) {
@@ -402,6 +424,7 @@ class Daemon(_context: Context) {
                         val input = logStream(exec.inputStream, cmd, "input")
                         w("IPFS daemon process mabe terminated!  code:$code  input:$input", TAG)
                     }
+                    blo?.invoke()
                 } catch (e: Throwable) {
                     w(e?.message ?: "catch null error message", TAG)
                     w(e, TAG)

@@ -60,6 +60,7 @@ object Settings {
     fun removeSettingChangedListner(blo: (key: String, new: Any?, old: Any?) -> Unit) {
         listners.remove(blo)
     }
+
 }
 
 infix fun <V : Serializable> String.set(that: V) {
